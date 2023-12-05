@@ -1,16 +1,13 @@
 //! Mode info.
 
 use super::SignMode;
-use crate::{crypto::CompactBitArray, proto, Error, ErrorReport, Result};
+use crate::{proto, Error, ErrorReport, Result};
 
 /// [`ModeInfo`] describes the signing mode of a single or nested multisig signer.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum ModeInfo {
     /// Single represents a single signer.
     Single(Single),
-
-    /// Multi represents a nested multisig signer.
-    Multi(Multi),
 }
 
 impl ModeInfo {
@@ -28,8 +25,8 @@ impl TryFrom<proto::cosmos::tx::v1beta1::ModeInfo> for ModeInfo {
             Some(proto::cosmos::tx::v1beta1::mode_info::Sum::Single(single)) => {
                 Ok(ModeInfo::Single(single.into()))
             }
-            Some(proto::cosmos::tx::v1beta1::mode_info::Sum::Multi(multi)) => {
-                Ok(ModeInfo::Multi(multi.try_into()?))
+            Some(proto::cosmos::tx::v1beta1::mode_info::Sum::Multi(_)) => {
+                panic!("multi support stripped");
             }
             None => Err(Error::MissingField { name: "mode_info" }.into()),
         }
@@ -43,9 +40,6 @@ impl From<ModeInfo> for proto::cosmos::tx::v1beta1::ModeInfo {
                 ModeInfo::Single(single) => {
                     proto::cosmos::tx::v1beta1::mode_info::Sum::Single(single.into())
                 }
-                ModeInfo::Multi(multi) => {
-                    proto::cosmos::tx::v1beta1::mode_info::Sum::Multi(multi.into())
-                }
             }),
         }
     }
@@ -54,12 +48,6 @@ impl From<ModeInfo> for proto::cosmos::tx::v1beta1::ModeInfo {
 impl From<Single> for ModeInfo {
     fn from(single: Single) -> ModeInfo {
         ModeInfo::Single(single)
-    }
-}
-
-impl From<Multi> for ModeInfo {
-    fn from(multi: Multi) -> ModeInfo {
-        ModeInfo::Multi(multi)
     }
 }
 
@@ -96,43 +84,5 @@ impl From<SignMode> for Single {
 impl From<Single> for SignMode {
     fn from(single: Single) -> SignMode {
         single.mode
-    }
-}
-
-/// [`Multi`] is the mode info for a multisig public key.
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub struct Multi {
-    /// Specifies which keys within the multisig are signing.
-    pub bitarray: CompactBitArray,
-
-    /// Corresponding modes of the signers of the multisig which could include nested
-    /// multisig public keys.
-    pub mode_infos: Vec<ModeInfo>,
-}
-
-impl TryFrom<proto::cosmos::tx::v1beta1::mode_info::Multi> for Multi {
-    type Error = ErrorReport;
-
-    fn try_from(proto: proto::cosmos::tx::v1beta1::mode_info::Multi) -> Result<Multi> {
-        Ok(Multi {
-            bitarray: proto
-                .bitarray
-                .map(Into::into)
-                .ok_or(Error::MissingField { name: "bitarray" })?,
-            mode_infos: proto
-                .mode_infos
-                .into_iter()
-                .map(TryInto::try_into)
-                .collect::<Result<_, _>>()?,
-        })
-    }
-}
-
-impl From<Multi> for proto::cosmos::tx::v1beta1::mode_info::Multi {
-    fn from(multi: Multi) -> proto::cosmos::tx::v1beta1::mode_info::Multi {
-        proto::cosmos::tx::v1beta1::mode_info::Multi {
-            bitarray: Some(multi.bitarray.into()),
-            mode_infos: multi.mode_infos.into_iter().map(Into::into).collect(),
-        }
     }
 }

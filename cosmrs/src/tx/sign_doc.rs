@@ -2,7 +2,6 @@
 
 use super::{AccountNumber, AuthInfo, Body, Raw};
 use crate::{
-    crypto::secp256k1,
     proto::{self, traits::MessageExt},
     Result,
 };
@@ -54,20 +53,6 @@ impl SignDoc {
     /// Encode this type using Protocol Buffers.
     pub fn into_bytes(self) -> Result<Vec<u8>> {
         Ok(self.into_proto().to_bytes()?)
-    }
-
-    /// Sign this [`SignDoc`], producing a [`Raw`] transaction.
-    pub fn sign(self, signing_key: &secp256k1::SigningKey) -> Result<Raw> {
-        // TODO(tarcieri): optimize away `Clone` calls with reference conversions
-        let sign_doc_bytes = self.clone().into_bytes()?;
-        let signature = signing_key.sign(&sign_doc_bytes)?;
-
-        Ok(proto::cosmos::tx::v1beta1::TxRaw {
-            body_bytes: self.body_bytes,
-            auth_info_bytes: self.auth_info_bytes,
-            signatures: vec![signature.to_vec()],
-        }
-        .into())
     }
 }
 

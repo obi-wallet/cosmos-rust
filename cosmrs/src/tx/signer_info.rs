@@ -1,10 +1,7 @@
 //! Signer info.
 
 use super::{AuthInfo, Fee, ModeInfo, SequenceNumber, SignMode};
-use crate::{
-    crypto::{LegacyAminoMultisig, PublicKey},
-    proto, Any, Error, ErrorReport, Result,
-};
+use crate::{crypto::PublicKey, proto, Any, Error, ErrorReport, Result};
 use eyre::WrapErr;
 
 /// [`SignerInfo`] describes the public key and signing mode of a single top-level signer.
@@ -80,9 +77,6 @@ pub enum SignerPublicKey {
     /// Single singer.
     Single(PublicKey),
 
-    /// Legacy Amino multisig.
-    LegacyAminoMultisig(LegacyAminoMultisig),
-
     /// Other key types beyond the ones provided above.
     Any(Any),
 }
@@ -92,7 +86,6 @@ impl SignerPublicKey {
     pub fn type_url(&self) -> &str {
         match self {
             Self::Single(pk) => pk.type_url(),
-            Self::LegacyAminoMultisig(_) => LegacyAminoMultisig::TYPE_URL,
             Self::Any(any) => &any.type_url,
         }
     }
@@ -101,14 +94,6 @@ impl SignerPublicKey {
     pub fn single(&self) -> Option<&PublicKey> {
         match self {
             Self::Single(pk) => Some(pk),
-            _ => None,
-        }
-    }
-
-    /// Get the [`LegacyAminoMultisig`] key info, if applicable.
-    pub fn legacy_amino_multisig(&self) -> Option<&LegacyAminoMultisig> {
-        match self {
-            Self::LegacyAminoMultisig(amino_multisig) => Some(amino_multisig),
             _ => None,
         }
     }
@@ -122,17 +107,10 @@ impl From<PublicKey> for SignerPublicKey {
     }
 }
 
-impl From<LegacyAminoMultisig> for SignerPublicKey {
-    fn from(pk: LegacyAminoMultisig) -> SignerPublicKey {
-        Self::LegacyAminoMultisig(pk)
-    }
-}
-
 impl From<SignerPublicKey> for Any {
     fn from(public_key: SignerPublicKey) -> Any {
         match public_key {
             SignerPublicKey::Single(pk) => pk.into(),
-            SignerPublicKey::LegacyAminoMultisig(pk) => pk.into(),
             SignerPublicKey::Any(any) => any,
         }
     }
@@ -146,7 +124,6 @@ impl TryFrom<Any> for SignerPublicKey {
             PublicKey::ED25519_TYPE_URL | PublicKey::SECP256K1_TYPE_URL => {
                 PublicKey::try_from(any).map(Into::into)
             }
-            LegacyAminoMultisig::TYPE_URL => LegacyAminoMultisig::try_from(any).map(Into::into),
             _ => Ok(Self::Any(any)),
         }
     }

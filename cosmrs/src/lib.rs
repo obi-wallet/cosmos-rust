@@ -27,20 +27,8 @@
 //! - `tendermint-rpc`: re-exported as `cosmrs::rpc` (requires `rpc` crate feature)
 
 pub mod abci;
-pub mod auth;
-pub mod bank;
 pub mod crypto;
-pub mod distribution;
-pub mod feegrant;
-pub mod staking;
 pub mod tx;
-pub mod vesting;
-
-#[cfg(feature = "cosmwasm")]
-pub mod cosmwasm;
-
-#[cfg(feature = "dev")]
-pub mod dev;
 
 mod base;
 mod error;
