@@ -20,13 +20,8 @@ prost = "0.12"
 prost-types = "0.12"
 tendermint-proto = "0.34"
 
-# Optional dependencies
-tonic = { version = "0.10", optional = true, default-features = false, features = ["codegen", "prost"] }
-
 [features]
-default = ["grpc-transport"]
-grpc = ["tonic"]
-grpc-transport = ["grpc", "tonic/transport"]
+default = []
 cosmwasm = []
 
 [package.metadata.docs.rs]
