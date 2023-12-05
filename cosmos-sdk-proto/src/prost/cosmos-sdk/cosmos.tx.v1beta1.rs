@@ -184,18 +184,6 @@ pub mod mode_info {
         #[prost(enumeration = "super::super::signing::v1beta1::SignMode", tag = "1")]
         pub mode: i32,
     }
-    /// Multi is the mode info for a multisig public key
-    #[derive(Clone, PartialEq, ::prost::Message)]
-    pub struct Multi {
-        /// bitarray specifies which keys within the multisig are signing
-        #[prost(message, optional, tag = "1")]
-        pub bitarray:
-            ::core::option::Option<super::super::super::crypto::multisig::v1beta1::CompactBitArray>,
-        /// mode_infos is the corresponding modes of the signers of the multisig
-        /// which could include nested multisig public keys
-        #[prost(message, repeated, tag = "2")]
-        pub mode_infos: ::prost::alloc::vec::Vec<super::ModeInfo>,
-    }
     /// sum is the oneof that specifies whether this represents a single or nested
     /// multisig signer
     #[derive(Clone, PartialEq, ::prost::Oneof)]
@@ -203,9 +191,6 @@ pub mod mode_info {
         /// single represents a single signer
         #[prost(message, tag = "1")]
         Single(Single),
-        /// multi represents a nested multisig signer
-        #[prost(message, tag = "2")]
-        Multi(Multi),
     }
 }
 /// Fee includes the amount of coins paid in fees and the maximum

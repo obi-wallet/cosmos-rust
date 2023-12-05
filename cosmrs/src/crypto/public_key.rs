@@ -46,10 +46,6 @@ impl PublicKey {
     /// Convert this [`PublicKey`] to a Protobuf [`Any`] type.
     pub fn to_any(&self) -> Result<Any> {
         let value = match self.0 {
-            tendermint::PublicKey::Ed25519(_) => proto::cosmos::crypto::ed25519::PubKey {
-                key: self.to_bytes(),
-            }
-            .to_bytes()?,
             _ => return Err(Error::Crypto.into()),
         };
 
@@ -78,22 +74,9 @@ impl TryFrom<&Any> for PublicKey {
 
     fn try_from(any: &Any) -> Result<PublicKey> {
         match any.type_url.as_str() {
-            Self::ED25519_TYPE_URL => {
-                proto::cosmos::crypto::ed25519::PubKey::decode(&*any.value)?.try_into()
-            }
             other => Err(Error::Crypto)
                 .wrap_err_with(|| format!("invalid type URL for public key: {}", other)),
         }
-    }
-}
-
-impl TryFrom<proto::cosmos::crypto::ed25519::PubKey> for PublicKey {
-    type Error = ErrorReport;
-
-    fn try_from(public_key: proto::cosmos::crypto::ed25519::PubKey) -> Result<PublicKey> {
-        tendermint::public_key::PublicKey::from_raw_ed25519(&public_key.key)
-            .map(Into::into)
-            .ok_or_else(|| Error::Crypto.into())
     }
 }
 

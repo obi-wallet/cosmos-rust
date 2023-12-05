@@ -25,9 +25,6 @@ impl TryFrom<proto::cosmos::tx::v1beta1::ModeInfo> for ModeInfo {
             Some(proto::cosmos::tx::v1beta1::mode_info::Sum::Single(single)) => {
                 Ok(ModeInfo::Single(single.into()))
             }
-            Some(proto::cosmos::tx::v1beta1::mode_info::Sum::Multi(_)) => {
-                panic!("multi support stripped");
-            }
             None => Err(Error::MissingField { name: "mode_info" }.into()),
         }
     }

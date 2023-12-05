@@ -44,27 +44,12 @@ pub mod signature_descriptor {
             #[prost(bytes = "vec", tag = "2")]
             pub signature: ::prost::alloc::vec::Vec<u8>,
         }
-        /// Multi is the signature data for a multisig public key
-        #[derive(Clone, PartialEq, ::prost::Message)]
-        pub struct Multi {
-            /// bitarray specifies which keys within the multisig are signing
-            #[prost(message, optional, tag = "1")]
-            pub bitarray: ::core::option::Option<
-                super::super::super::super::super::crypto::multisig::v1beta1::CompactBitArray,
-            >,
-            /// signatures is the signatures of the multi-signature
-            #[prost(message, repeated, tag = "2")]
-            pub signatures: ::prost::alloc::vec::Vec<super::Data>,
-        }
         /// sum is the oneof that specifies whether this represents single or multi-signature data
         #[derive(Clone, PartialEq, ::prost::Oneof)]
         pub enum Sum {
             /// single represents a single signer
             #[prost(message, tag = "1")]
             Single(Single),
-            /// multi represents a multisig signer
-            #[prost(message, tag = "2")]
-            Multi(Multi),
         }
     }
 }

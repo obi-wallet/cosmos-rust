@@ -73,15 +73,15 @@ pub mod reflection_service_client {
         ///
         /// Default: `4MB`
         #[must_use]
-        pub fn max_decoding_message_size(mut self, limit: usize) -> Self {
+        pub fn max_decoding_message_size(mut self, limit: u64) -> Self {
             self.inner = self.inner.max_decoding_message_size(limit);
             self
         }
         /// Limits the maximum size of an encoded message.
         ///
-        /// Default: `usize::MAX`
+        /// Default: `u64::MAX`
         #[must_use]
-        pub fn max_encoding_message_size(mut self, limit: usize) -> Self {
+        pub fn max_encoding_message_size(mut self, limit: u64) -> Self {
             self.inner = self.inner.max_encoding_message_size(limit);
             self
         }
@@ -267,8 +267,8 @@ pub mod reflection_service_server {
         inner: _Inner<T>,
         accept_compression_encodings: EnabledCompressionEncodings,
         send_compression_encodings: EnabledCompressionEncodings,
-        max_decoding_message_size: Option<usize>,
-        max_encoding_message_size: Option<usize>,
+        max_decoding_message_size: Option<u64>,
+        max_encoding_message_size: Option<u64>,
     }
     struct _Inner<T>(Arc<T>);
     impl<T: ReflectionService> ReflectionServiceServer<T> {
@@ -307,15 +307,15 @@ pub mod reflection_service_server {
         ///
         /// Default: `4MB`
         #[must_use]
-        pub fn max_decoding_message_size(mut self, limit: usize) -> Self {
+        pub fn max_decoding_message_size(mut self, limit: u64) -> Self {
             self.max_decoding_message_size = Some(limit);
             self
         }
         /// Limits the maximum size of an encoded message.
         ///
-        /// Default: `usize::MAX`
+        /// Default: `u64::MAX`
         #[must_use]
-        pub fn max_encoding_message_size(mut self, limit: usize) -> Self {
+        pub fn max_encoding_message_size(mut self, limit: u64) -> Self {
             self.max_encoding_message_size = Some(limit);
             self
         }

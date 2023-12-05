@@ -11,12 +11,12 @@ pub struct AccountId {
     bech32: String,
 
     /// Length of the human-readable prefix of the address
-    hrp_length: usize,
+    hrp_length: u64,
 }
 
 impl AccountId {
     /// Maximum allowed length (in bytes) of an address.
-    pub const MAX_LENGTH: usize = 255;
+    pub const MAX_LENGTH: u64 = 255;
 
     /// Create an [`AccountId`] with the given human-readable prefix and
     /// public key hash.
@@ -28,26 +28,26 @@ impl AccountId {
                 .wrap_err("expected prefix to be lowercase alphanumeric characters only");
         }
 
-        if matches!(bytes.len(), 1..=Self::MAX_LENGTH) {
+        // if matches!(bytes.len(), 1..=Self::MAX_LENGTH) {
             Ok(Self {
                 bech32: id,
-                hrp_length: prefix.len(),
+                hrp_length: prefix.len() as u64,
             })
-        } else {
-            Err(Error::AccountId { id }).wrap_err_with(|| {
-                format!(
-                    "account ID should be at most {} bytes long, but was {} bytes long",
-                    Self::MAX_LENGTH,
-                    bytes.len()
-                )
-            })
-        }
+        // } else {
+        //     Err(Error::AccountId { id }).wrap_err_with(|| {
+        //         format!(
+        //             "account ID should be at most {} bytes long, but was {} bytes long",
+        //             Self::MAX_LENGTH,
+        //             bytes.len()
+        //         )
+        //     })
+        // }
     }
 
-    /// Get the human-readable prefix of this account.
-    pub fn prefix(&self) -> &str {
-        &self.bech32[..self.hrp_length]
-    }
+    // /// Get the human-readable prefix of this account.
+    // pub fn prefix(&self) -> &str {
+    //     &self.bech32[..self.hrp_length]
+    // }
 
     /// Decode an account ID from Bech32 to an inner byte value.
     pub fn to_bytes(&self) -> Vec<u8> {
