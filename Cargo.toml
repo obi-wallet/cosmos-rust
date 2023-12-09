@@ -4,3 +4,6 @@ members = [
     "cosmos-sdk-proto",
     "cosmrs"
 ]
+
+[patch.crates-io]
+serde-json-wasm = { git = "https://github.com/chris-ricketts/serde-json-wasm", branch = "rm-err-fmt" }

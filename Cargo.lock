@@ -52,7 +52,6 @@ dependencies = [
  "eyre",
  "hex-literal",
  "serde",
- "serde_json",
  "subtle-encoding",
  "tendermint",
  "thiserror",
@@ -568,3 +567,8 @@ dependencies = [
  "quote",
  "syn 2.0.37",
 ]
+
+[[patch.unused]]
+name = "serde-json-wasm"
+version = "0.5.0"
+source = "git+https://github.com/chris-ricketts/serde-json-wasm?branch=rm-err-fmt#47a556c68dc778535c9b93143043b21011202da1"
